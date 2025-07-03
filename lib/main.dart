@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'dart:math';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -30,8 +30,37 @@ class AgilDistributionApp extends StatelessWidget {
     );
   }
 }
+class WelcomeScreen extends StatefulWidget {
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
-class WelcomeScreen extends StatelessWidget {
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    )..repeat();
+
+    _animation = Tween<double>(begin: 0, end: 360).animate(
+      CurvedAnimation(
+        parent: _controller, 
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +76,7 @@ class WelcomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Spacer(flex: 2),
-            // Tunisian-inspired logo
+            // Tunisian-inspired logo with circle animation
             Container(
               width: 120,
               height: 120,
@@ -65,13 +94,18 @@ class WelcomeScreen extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFFFD700),
-                      shape: BoxShape.circle,
-                    ),
+                  // Animated yellow circle
+                  AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return CustomPaint(
+                        size: Size(100, 100),
+                        painter: CirclePainter(
+                          angle: _animation.value,
+                          color: Color(0xFFFFD700),
+                        ),
+                      );
+                    },
                   ),
                   Container(
                     width: 80,
@@ -178,6 +212,42 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
+class CirclePainter extends CustomPainter {
+  final double angle;
+  final Color color;
+
+  CirclePainter({required this.angle, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width / 2, size.height / 2) - 5;
+
+    // Convert angle to radians
+    double startAngle = -90 * (pi / 180);
+    double sweepAngle = angle * (pi / 180);
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
 class SignInScreen extends StatefulWidget {
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -201,7 +271,7 @@ class _SignInScreenState extends State<SignInScreen> {
         child: ListView(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 60.0,left: 20),
+              padding: const EdgeInsets.only(top: 60.0, left: 20),
               child: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.pop(context),
