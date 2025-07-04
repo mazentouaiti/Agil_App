@@ -30,10 +30,12 @@ class AgilDistributionApp extends StatelessWidget {
     );
   }
 }
+
 class WelcomeScreen extends StatefulWidget {
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
+
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -47,12 +49,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       duration: Duration(seconds: 2),
     )..repeat();
 
-    _animation = Tween<double>(begin: 0, end: 360).animate(
-      CurvedAnimation(
-        parent: _controller, 
-        curve: Curves.easeInOut,
-      ),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 360,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -268,207 +268,216 @@ class _SignInScreenState extends State<SignInScreen> {
             colors: [Colors.white, Color(0xFFFFF9C4)],
           ),
         ),
-        child: ListView(
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0, left: 20),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.local_gas_station,
-                          size: 40,
-                          color: Color(0xFFFFD700),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Text(
-                      'CONNEXION',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      'Accédez à votre espace professionnel',
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Email professionnel',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(
-                              Icons.email,
-                              color: Colors.black54,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre email';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Email invalide';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Mot de passe',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(Icons.lock, color: Colors.black54),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.black54,
+            ListView(
+              padding: EdgeInsets.only(top: 100.0), // Added top padding
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 10,
+                                spreadRadius: 2,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
+                            ],
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre mot de passe';
-                            }
-                            if (value.length < 6) {
-                              return 'Le mot de passe doit contenir au moins 6 caractères';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              'Mot de passe oublié?',
-                              style: TextStyle(color: Colors.black),
+                          child: Center(
+                            child: Icon(
+                              Icons.local_gas_station,
+                              size: 40,
+                              color: Color(0xFFFFD700),
                             ),
                           ),
                         ),
-                        SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Sign in logic
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Color(0xFFFFD700),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: Size(double.infinity, 0),
-                            elevation: 5,
-                          ),
-                          child: Text(
-                            'SE CONNECTER',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: Text(
+                          'CONNEXION',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          'Accédez à votre espace professionnel',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      Form(
+                        key: _formKey,
+                        child: Column(
                           children: [
-                            Text(
-                              "Vous n'avez pas de compte? ",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUpScreen(),
-                                  ),
-                                );
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                labelText: 'Email professionnel',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.email,
+                                  color: Colors.black54,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Email invalide';
+                                }
+                                return null;
                               },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              obscureText: _obscurePassword,
+                              decoration: InputDecoration(
+                                labelText: 'Mot de passe',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: Colors.black54,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.black54,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre mot de passe';
+                                }
+                                if (value.length < 6) {
+                                  return 'Le mot de passe doit contenir au moins 6 caractères';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 10),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  'Mot de passe oublié?',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  // Sign in logic
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Color(0xFFFFD700),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                minimumSize: Size(double.infinity, 0),
+                                elevation: 5,
+                              ),
                               child: Text(
-                                'Créer un compte',
+                                'SE CONNECTER',
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Vous n'avez pas de compte? ",
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SignUpScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Créer un compte',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 40),
                           ],
                         ),
-                        SizedBox(height: 40),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+            Positioned(
+              top: 60.0,
+              left: 20,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
           ],
@@ -500,340 +509,354 @@ class _SignUpScreenState extends State<SignUpScreen> {
             colors: [Colors.white, Color(0xFFFFF9C4)],
           ),
         ),
-        child: ListView(
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0, left: 20),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.local_gas_station,
-                          size: 40,
-                          color: Color(0xFFFFD700),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Text(
-                      'CRÉER UN COMPTE',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      'Rejoignez notre réseau de distribution',
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Nom complet',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(
-                              Icons.person,
-                              color: Colors.black54,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre nom';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Email professionnel',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(
-                              Icons.email,
-                              color: Colors.black54,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre email';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Email invalide';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            labelText: 'Téléphone',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(
-                              Icons.phone,
-                              color: Colors.black54,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre numéro';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Mot de passe',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(Icons.lock, color: Colors.black54),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.black54,
+            ListView(
+              padding: EdgeInsets.only(top: 100.0),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 10,
+                                spreadRadius: 2,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
+                            ],
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.local_gas_station,
+                              size: 40,
+                              color: Color(0xFFFFD700),
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre mot de passe';
-                            }
-                            if (value.length < 8) {
-                              return 'Le mot de passe doit contenir au moins 8 caractères';
-                            }
-                            return null;
-                          },
                         ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          style: TextStyle(color: Colors.black),
-                          obscureText: _obscureConfirmPassword,
-                          decoration: InputDecoration(
-                            labelText: 'Confirmer le mot de passe',
-                            labelStyle: TextStyle(color: Colors.black54),
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              color: Colors.black54,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.black54,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword;
-                                });
-                              },
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20,
-                            ),
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: Text(
+                          'CRÉER UN COMPTE',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Veuillez confirmer votre mot de passe';
-                            }
-                            return null;
-                          },
                         ),
-                        SizedBox(height: 20),
-                        Row(
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          'Rejoignez notre réseau de distribution',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      Form(
+                        key: _formKey,
+                        child: Column(
                           children: [
-                            Checkbox(
-                              value: _acceptTerms,
-                              onChanged: (value) {
-                                setState(() {
-                                  _acceptTerms = value!;
-                                });
-                              },
-                              fillColor: MaterialStateProperty.all(
-                                Colors.black,
-                              ),
-                              checkColor: Color(0xFFFFD700),
-                            ),
-                            Flexible(
-                              child: RichText(
-                                text: TextSpan(
-                                  text: "J'accepte les ",
-                                  style: TextStyle(color: Colors.black54),
-                                  children: [
-                                    TextSpan(
-                                      text: 'conditions générales',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                    TextSpan(text: " et la "),
-                                    TextSpan(
-                                      text: 'politique de confidentialité',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                labelText: 'Nom complet',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.person,
+                                  color: Colors.black54,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 30),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate() &&
-                                _acceptTerms) {
-                              // Sign up logic
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Color(0xFFFFD700),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: Size(double.infinity, 0),
-                            elevation: 5,
-                          ),
-                          child: Text(
-                            "S'INSCRIRE",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Vous avez déjà un compte? ",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignInScreen(),
-                                  ),
-                                );
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre nom';
+                                }
+                                return null;
                               },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                labelText: 'Email professionnel',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.email,
+                                  color: Colors.black54,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Email invalide';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                labelText: 'Téléphone',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.phone,
+                                  color: Colors.black54,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre numéro';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              obscureText: _obscurePassword,
+                              decoration: InputDecoration(
+                                labelText: 'Mot de passe',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: Colors.black54,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.black54,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez entrer votre mot de passe';
+                                }
+                                if (value.length < 8) {
+                                  return 'Le mot de passe doit contenir au moins 8 caractères';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              style: TextStyle(color: Colors.black),
+                              obscureText: _obscureConfirmPassword,
+                              decoration: InputDecoration(
+                                labelText: 'Confirmer le mot de passe',
+                                labelStyle: TextStyle(color: Colors.black54),
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.black54,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscureConfirmPassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.black54,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword;
+                                    });
+                                  },
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 15,
+                                  horizontal: 20,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Veuillez confirmer votre mot de passe';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _acceptTerms,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _acceptTerms = value!;
+                                    });
+                                  },
+                                  fillColor: MaterialStateProperty.all(
+                                    Colors.black,
+                                  ),
+                                  checkColor: Color(0xFFFFD700),
+                                ),
+                                Flexible(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: "J'accepte les ",
+                                      style: TextStyle(color: Colors.black54),
+                                      children: [
+                                        TextSpan(
+                                          text: 'conditions générales',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                        TextSpan(text: " et la "),
+                                        TextSpan(
+                                          text: 'politique de confidentialité',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate() &&
+                                    _acceptTerms) {
+                                  // Sign up logic
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Color(0xFFFFD700),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                minimumSize: Size(double.infinity, 0),
+                                elevation: 5,
+                              ),
                               child: Text(
-                                'Se connecter',
+                                "S'INSCRIRE",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Vous avez déjà un compte? ",
+                                  style: TextStyle(color: Colors.black54),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SignInScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Se connecter',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 40),
                           ],
                         ),
-                        SizedBox(height: 40),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ],
+            ),
+            Positioned(
+              top: 60.0,
+              left: 20.0,
+              child: Material(
+                type: MaterialType.transparency,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ),
           ],
