@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
 
 void main() {
@@ -437,6 +438,53 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ),
                             SizedBox(height: 20),
+                            Center(
+                              child: Text(
+                                'Ou connectez-vous avec',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Google Login
+                                _buildSocialButton(
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.google,
+                                    color: Colors.black,
+                                  ),
+                                  onPressed: () {
+                                    // Implement Google sign-in
+                                  },
+                                ),
+                                SizedBox(width: 20),
+
+                                // GitHub Login
+                                _buildSocialButton(
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.github,
+                                    color: Colors.black,
+                                  ),
+                                  onPressed: () {
+                                    // Implement GitHub sign-in
+                                  },
+                                ),
+                                SizedBox(width: 20),
+
+                                // Face ID Login
+                                _buildSocialButton(
+                                  icon: Icon(Icons.face, color: Colors.black),
+                                  onPressed: () {
+                                    // Implement Face ID authentication
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -481,6 +529,26 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialButton({
+    required Widget icon,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black54, width: 1),
+      ),
+      child: IconButton(
+        icon: icon,
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.white,
+          padding: EdgeInsets.all(12),
         ),
       ),
     );
