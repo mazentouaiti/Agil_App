@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -14,6 +16,8 @@ void main() {
 }
 
 class AgilDistributionApp extends StatelessWidget {
+  const AgilDistributionApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,6 +37,8 @@ class AgilDistributionApp extends StatelessWidget {
 }
 
 class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -250,6 +256,8 @@ class CirclePainter extends CustomPainter {
 }
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -556,6 +564,8 @@ class _SignInScreenState extends State<SignInScreen> {
 }
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -565,6 +575,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
+  // Add controllers for text fields
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -635,6 +651,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         child: Column(
                           children: [
                             TextFormField(
+                              controller: _nameController,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 labelText: 'Nom complet',
@@ -663,6 +680,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             SizedBox(height: 20),
                             TextFormField(
+                              controller: _emailController,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 labelText: 'Email professionnel',
@@ -694,6 +712,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             SizedBox(height: 20),
                             TextFormField(
+                              controller: _phoneController,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 labelText: 'Téléphone',
@@ -722,6 +741,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             SizedBox(height: 20),
                             TextFormField(
+                              controller: _passwordController,
                               style: TextStyle(color: Colors.black),
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
@@ -767,6 +787,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             SizedBox(height: 20),
                             TextFormField(
+                              controller: _confirmPasswordController,
                               style: TextStyle(color: Colors.black),
                               obscureText: _obscureConfirmPassword,
                               decoration: InputDecoration(
@@ -818,7 +839,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       _acceptTerms = value!;
                                     });
                                   },
-                                  fillColor: MaterialStateProperty.all(
+                                  fillColor: WidgetStateProperty.all(
                                     Colors.black,
                                   ),
                                   checkColor: Color(0xFFFFD700),
@@ -859,7 +880,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onPressed: () {
                                 if (_formKey.currentState!.validate() &&
                                     _acceptTerms) {
-                                  // Sign up logic
+                                  _signUp();
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -931,5 +952,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _signUp() async {
+    if (_formKey.currentState!.validate() && _acceptTerms) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/api/signup/'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'username': _emailController.text,
+            'email': _emailController.text,
+            'password': _passwordController.text,
+            'full_name': _nameController.text,
+            'phone': _phoneController.text,
+          }),
+        );
+
+        final responseData = json.decode(response.body);
+
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Network error: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }
