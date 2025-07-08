@@ -14,11 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
-from accounts.views import SignUpView
+from django.contrib import admin
+from accounts.views import home, SignUpView
 
 urlpatterns = [
+    path('', home, name='home'),  # Add this line
     path('api/signup/', SignUpView.as_view(), name='signup'),
     path('admin/', admin.site.urls),
 ]

@@ -954,44 +954,89 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  // Future<void> _signUp() async {
+  //   if (_formKey.currentState!.validate() && _acceptTerms) {
+  //     try {
+  //       final response = await http.post(
+  //         Uri.parse('http://10.0.2.2:8000/api/signup/'),
+  //         headers: {'Content-Type': 'application/json'},
+  //         body: json.encode({
+  //           'username': _emailController.text,
+  //           'email': _emailController.text,
+  //           'password': _passwordController.text,
+  //           'full_name': _nameController.text,
+  //           'phone': _phoneController.text,
+  //         }),
+  //       );
+
+  //       final responseData = json.decode(response.body);
+
+  //       if (response.statusCode == 201) {
+  //         ScaffoldMessenger.of(
+  //           context,
+  //         ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+  //         Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => SignInScreen()),
+  //         );
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
+  //         );
+  //       }
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Network error: ${e.toString()}')),
+  //       );
+  //     }
+  //   }
+  // }
   Future<void> _signUp() async {
-    if (_formKey.currentState!.validate() && _acceptTerms) {
-      try {
-        final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/api/signup/'),
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'username': _emailController.text,
-            'email': _emailController.text,
-            'password': _passwordController.text,
-            'full_name': _nameController.text,
-            'phone': _phoneController.text,
-          }),
+  if (_formKey.currentState!.validate() && _acceptTerms) {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    try {
+      final requestBody = {
+        'username': _emailController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'full_name': _nameController.text.trim(),
+      };
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/signup/'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(requestBody),
+      );
+
+      final responseData = json.decode(response.body);
+      
+      if (response.statusCode == 201) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SignInScreen()),
         );
-
-        final responseData = json.decode(response.body);
-
-        if (response.statusCode == 201) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(responseData['message'])));
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SignInScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
-          );
-        }
-      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Network error: ${e.toString()}')),
+          SnackBar(content: Text('Account created successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
         );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
-
+}
   @override
   void dispose() {
     _nameController.dispose();
