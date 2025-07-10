@@ -22,4 +22,5 @@ urlpatterns = [
     path('', home, name='home'),  # Add this line
     path('api/signup/', SignUpView.as_view(), name='signup'),
     path('admin/', admin.site.urls),
+     path('api/', include('accounts.urls')),
 ]

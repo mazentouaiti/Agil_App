@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -265,6 +266,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -335,6 +338,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: Column(
                           children: [
                             TextFormField(
+                              controller: _emailController,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 labelText: 'Email professionnel',
@@ -366,6 +370,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                             SizedBox(height: 20),
                             TextFormField(
+                              controller: _passwordController,
                               style: TextStyle(color: Colors.black),
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
@@ -422,9 +427,9 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                             SizedBox(height: 30),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  // Sign in logic
+                                  _signIn();
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -560,6 +565,60 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _signIn() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/api/login/'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'email': _emailController.text.trim(),
+            'password': _passwordController.text.trim(),
+          }),
+        );
+
+        final responseData = json.decode(response.body);
+
+        print('Response: ${response.statusCode}'); // Debug log
+        print('Response Body: $responseData'); // Debug log
+
+        if (response.statusCode == 200) {
+          // Safely handle token
+          final token = responseData['access']?.toString(); // Null check
+
+          if (token == null) {
+            throw Exception('Token not received');
+          }
+
+          // Save token
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          final errorMsg = responseData['message'] ?? 'Login failed';
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(errorMsg)));
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Login error: ${e.toString()}')));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
 
@@ -992,51 +1051,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
   //   }
   // }
   Future<void> _signUp() async {
-  if (_formKey.currentState!.validate() && _acceptTerms) {
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Passwords do not match')),
-      );
-      return;
-    }
-
-    try {
-      final requestBody = {
-        'username': _emailController.text.trim(),
-        'email': _emailController.text.trim(),
-        'password': _passwordController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'full_name': _nameController.text.trim(),
-      };
-
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/signup/'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(requestBody),
-      );
-
-      final responseData = json.decode(response.body);
-      
-      if (response.statusCode == 201) {
-        Navigator.pushReplacement(
+    if (_formKey.currentState!.validate() && _acceptTerms) {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(
           context,
-          MaterialPageRoute(builder: (context) => SignInScreen()),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Account created successfully!')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
-        );
+        ).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+        return;
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+
+      try {
+        final requestBody = {
+          'username': _emailController.text.trim(),
+          'email': _emailController.text.trim(),
+          'password': _passwordController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'full_name': _nameController.text.trim(),
+        };
+
+        final response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/api/signup/'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(requestBody),
+        );
+
+        final responseData = json.decode(response.body);
+
+        if (response.statusCode == 201) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Account created successfully!')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(responseData['message'] ?? 'Signup failed')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
     }
   }
-}
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -1045,5 +1105,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Dashboard')),
+      body: Center(child: Text('Welcome!')),
+    );
   }
 }
