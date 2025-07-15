@@ -12,6 +12,7 @@ dependencies:
   font_awesome_flutter: ^10.5.0
   http: ^0.13.5
   shared_preferences: ^2.2.2
+  local_auth: ^2.2.0
 
 dev_dependencies:
   flutter_test:
